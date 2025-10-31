@@ -1,71 +1,116 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public bool PauseGame;
-    public GameObject pauseButton;
-    public GameObject optionMenu;
-    public GameObject pauseCanvas;
-    public GameObject pauseMenu;
-    void Update()
+    [SerializeField] private GameObject pauseButton;
+    [SerializeField] private GameObject optionsMenu;
+    [SerializeField] private GameObject pauseCanvas;
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private InputActionReference pauseAction;
+
+    private bool isPaused;
+
+    private void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            AudioManager.instance.PlaySFX("Tap");
-            if (optionMenu.activeInHierarchy == false)
-            {
-                if (PauseGame)
-                {
-                    Resume();
-                }
-                else
-                {
-                    Pause();
-                }
-            }
-            else
-            {
-                CloseOption();
-            }
-        }
+        SubscribeToInput();
     }
+
+    private void OnDisable()
+    {
+        UnsubscribeFromInput();
+        SetPauseState(false);
+    }
+
     public void Resume()
     {
-        pauseCanvas.SetActive(false);
-        pauseMenu.SetActive(false);
-        optionMenu.SetActive(false);
-        pauseButton.SetActive(true);
-        Time.timeScale = 1f;
-        PauseGame = false;
+        SetPauseState(false);
     }
+
     public void Pause()
     {
-        pauseCanvas.SetActive(true);
-        pauseMenu.SetActive(true);
-        optionMenu.SetActive(false);
-        pauseButton.SetActive(false);
-        Time.timeScale = 0f;
-        PauseGame = true;
+        SetPauseState(true);
     }
-    public void CloseOption()
+
+    public void CloseOptions()
     {
-        pauseCanvas.SetActive(true);
-        pauseMenu.SetActive(true);
-        optionMenu.SetActive(false);
-        pauseButton.SetActive(false);
-        Time.timeScale = 0f;
-        PauseGame = true;
+        SetPauseState(true);
+        optionsMenu?.SetActive(false);
+        pauseMenu?.SetActive(true);
     }
+
     public void LoadMenu()
     {
-        pauseCanvas.SetActive(false);
-        pauseMenu.SetActive(false);
-        optionMenu.SetActive(false);
-        pauseButton.SetActive(true);
-        Time.timeScale = 0f;
+        SetPauseState(false);
         SceneManager.LoadScene("Menu");
+    }
+
+    private void SubscribeToInput()
+    {
+        if (pauseAction == null || pauseAction.action == null)
+        {
+            return;
+        }
+
+        pauseAction.action.performed += OnPausePerformed;
+        if (!pauseAction.action.enabled)
+        {
+            pauseAction.action.Enable();
+        }
+    }
+
+    private void UnsubscribeFromInput()
+    {
+        if (pauseAction == null || pauseAction.action == null)
+        {
+            return;
+        }
+
+        pauseAction.action.performed -= OnPausePerformed;
+        if (pauseAction.action.enabled)
+        {
+            pauseAction.action.Disable();
+        }
+    }
+
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
+        }
+
+        if (optionsMenu != null && optionsMenu.activeSelf)
+        {
+            CloseOptions();
+            return;
+        }
+
+        if (isPaused)
+        {
+            Resume();
+        }
+        else
+        {
+            Pause();
+        }
+
+        if (AudioManager.TryGetInstance(out var manager))
+        {
+            manager.PlaySFX("Tap");
+        }
+    }
+
+    private void SetPauseState(bool pause)
+    {
+        isPaused = pause;
+
+        pauseCanvas?.SetActive(pause);
+        pauseMenu?.SetActive(pause);
+        optionsMenu?.SetActive(false);
+        pauseButton?.SetActive(!pause);
+
+        Time.timeScale = pause ? 0f : 1f;
     }
 }

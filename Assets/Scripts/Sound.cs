@@ -1,10 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-[System.Serializable]
+[Serializable]
 public class Sound
 {
-    public string name;
-    public AudioClip clip;
+    [FormerlySerializedAs("name")]
+    [SerializeField] private string id;
+
+    [FormerlySerializedAs("clip")]
+    [SerializeField] private AudioClip audioClip;
+
+    public string Id => id;
+    public AudioClip Clip => audioClip;
 }

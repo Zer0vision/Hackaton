@@ -5,59 +5,74 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
-    private Rigidbody2D rb;
-    private Camera cam;
+    [SerializeField] private Camera gameplayCamera;
 
-    void Awake()
+    private Rigidbody2D rb;
+    private Vector2 moveInput;
+    private Vector2 lookInput;
+
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        cam = Camera.main;
+        gameplayCamera = gameplayCamera != null ? gameplayCamera : Camera.main;
+
         rb.gravityScale = 0f;
         rb.interpolation = RigidbodyInterpolation2D.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        Vector2 move = ReadMove();
-        if (move.sqrMagnitude > 1f) move.Normalize();
+        Vector2 move = moveInput;
+        if (move.sqrMagnitude > 1f)
+        {
+            move.Normalize();
+        }
+
         rb.MovePosition(rb.position + move * moveSpeed * Time.fixedDeltaTime);
     }
 
-    void Update()
+    private void Update()
     {
-        if (cam == null || Mouse.current == null) return;
-        Vector3 mouseWorld = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
-        Vector2 dir = (mouseWorld - transform.position);
-        if (dir.sqrMagnitude > 0.0001f) transform.up = dir.normalized;
+        Vector2 aimDirection = lookInput;
+
+        if (aimDirection.sqrMagnitude <= 0.0001f && Mouse.current != null && gameplayCamera != null)
+        {
+            Vector3 mouseWorld = gameplayCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+            aimDirection = (mouseWorld - transform.position);
+        }
+
+        if (aimDirection.sqrMagnitude > 0.0001f)
+        {
+            transform.up = aimDirection.normalized;
+        }
     }
 
-    private Vector2 ReadMove()
+    public void OnMove(InputAction.CallbackContext context)
     {
-        var kb = Keyboard.current;
-        var gp = Gamepad.current;
-
-        // Клавиатура WASD
-        float x = 0f, y = 0f;
-        if (kb != null)
+        moveInput = context.ReadValue<Vector2>();
+        if (context.canceled)
         {
-            if (kb.aKey.isPressed) x -= 1f;
-            if (kb.dKey.isPressed) x += 1f;
-            if (kb.sKey.isPressed) y -= 1f;
-            if (kb.wKey.isPressed) y += 1f;
+            moveInput = Vector2.zero;
+        }
+    }
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+        if (context.canceled)
+        {
+            lookInput = Vector2.zero;
+        }
+    }
+
+    public void OnFire(InputAction.CallbackContext context)
+    {
+        if (!context.performed)
+        {
+            return;
         }
 
-        // Геймпад (если подключён)
-        if (gp != null)
-        {
-            Vector2 stick = gp.leftStick.ReadValue();
-            if (stick.sqrMagnitude > 0.0001f)
-            {
-                x = stick.x;
-                y = stick.y;
-            }
-        }
-
-        return new Vector2(x, y);
+        // Hook for rhythm validation before firing.
     }
 }
