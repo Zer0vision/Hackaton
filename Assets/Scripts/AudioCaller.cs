@@ -1,15 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioCaller : MonoBehaviour
 {
     public void PlaySFX(string soundName)
     {
-        AudioManager.instance?.PlaySFX(soundName);
+        if (AudioManager.TryGetInstance(out var manager))
+        {
+            manager.PlaySFX(soundName);
+        }
     }
+
     public void PlayMusic(string musicName)
     {
-        AudioManager.instance?.PlayMusic(musicName);
+        if (AudioManager.TryGetInstance(out var manager))
+        {
+            manager.PlayMusic(musicName);
+        }
     }
 }
