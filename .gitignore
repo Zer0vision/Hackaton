@@ -1,0 +1,15 @@
+[Ll]ibrary/
+[Tt]emp/
+[Bb]uild*/
+[Bb]uilds*/
+[Oo]bj/
+UserSettings/
+Logs/
+MemoryCaptures/
+*.csproj
+*.sln
+*.user
+*.pidb
+*.booproj
+*.svd
+*.pdb
