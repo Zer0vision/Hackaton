@@ -7,6 +7,13 @@ public class UIController : MonoBehaviour
 {
     public Slider _musicSlider, _sfxSlider;
 
+    private AudioManager _audioManager;
+
+    private void Awake()
+    {
+        TryCacheAudioManager();
+    }
+
     private void Start()
     {
         LoadSettings();
@@ -14,14 +21,24 @@ public class UIController : MonoBehaviour
 
     public void musicVolume()
     {
-        AudioManager.instance.MusicVolume(_musicSlider.value);
+        if (!TryCacheAudioManager())
+        {
+            return;
+        }
+
+        _audioManager.MusicVolume(_musicSlider.value);
         PlayerPrefs.SetFloat("MusicVolume", _musicSlider.value);
         PlayerPrefs.Save();
     }
 
     public void SFXVolume()
     {
-        AudioManager.instance.SFXVolume(_sfxSlider.value);
+        if (!TryCacheAudioManager())
+        {
+            return;
+        }
+
+        _audioManager.SFXVolume(_sfxSlider.value);
         PlayerPrefs.SetFloat("SFXVolume", _sfxSlider.value);
         PlayerPrefs.Save();
     }
@@ -31,10 +48,43 @@ public class UIController : MonoBehaviour
         float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
         float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
 
-        _musicSlider.value = musicVolume;
-        _sfxSlider.value = sfxVolume;
+        if (_musicSlider != null)
+        {
+            _musicSlider.SetValueWithoutNotify(musicVolume);
+        }
 
-        AudioManager.instance.MusicVolume(musicVolume);
-        AudioManager.instance.SFXVolume(sfxVolume);
+        if (_sfxSlider != null)
+        {
+            _sfxSlider.SetValueWithoutNotify(sfxVolume);
+        }
+
+        if (TryCacheAudioManager())
+        {
+            _audioManager.MusicVolume(musicVolume);
+            _audioManager.SFXVolume(sfxVolume);
+        }
+    }
+
+    private bool TryCacheAudioManager()
+    {
+        if (_audioManager != null)
+        {
+            return true;
+        }
+
+        if (AudioManager.instance != null)
+        {
+            _audioManager = AudioManager.instance;
+            return true;
+        }
+
+        _audioManager = FindObjectOfType<AudioManager>();
+        if (_audioManager == null)
+        {
+            Debug.LogWarning("AudioManager instance not found when accessing UIController.");
+            return false;
+        }
+
+        return true;
     }
 }

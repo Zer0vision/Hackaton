@@ -14,12 +14,12 @@ public class Setings : MonoBehaviour
 
     private void Awake()
     {
+        PopulateResolutions();
         LoadSettings();
     }
 
     private void Start()
     {
-        PopulateResolutions();
         LoadUI();
     }
 
@@ -33,7 +33,11 @@ public class Setings : MonoBehaviour
         if (PlayerPrefs.HasKey("ResolutionPreference"))
         {
             int resIndex = PlayerPrefs.GetInt("ResolutionPreference");
-            SetResolutionFromIndex(resIndex);
+            if (!TrySetResolutionFromIndex(resIndex) && PlayerPrefs.HasKey("ResolutionPreference"))
+            {
+                PlayerPrefs.DeleteKey("ResolutionPreference");
+                PlayerPrefs.Save();
+            }
         }
     }
 
@@ -45,7 +49,6 @@ public class Setings : MonoBehaviour
         filteredResolutions.Clear();
         HashSet<(int width, int height)> seenResolutions = new HashSet<(int, int)>();
 
-        int currentResolutionIndex = 0;
         for (int i = 0; i < resolutions.Length; i++)
         {
             var res = resolutions[i];
@@ -55,10 +58,6 @@ public class Setings : MonoBehaviour
                 seenResolutions.Add(key);
                 filteredResolutions.Add(res);
                 options.Add(res.width + " x " + res.height);
-                if (res.width == Screen.currentResolution.width && res.height == Screen.currentResolution.height)
-                {
-                    currentResolutionIndex = filteredResolutions.Count - 1;
-                }
             }
         }
         resolutionDropdown.AddOptions(options);
@@ -73,17 +72,22 @@ public class Setings : MonoBehaviour
 
     public void SetResolution(int resolutionIndex)
     {
-        if (resolutionIndex >= 0 && resolutionIndex < filteredResolutions.Count)
+        if (TrySetResolutionFromIndex(resolutionIndex))
         {
-            Resolution res = filteredResolutions[resolutionIndex];
-            Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+            SaveResolution(resolutionIndex, Screen.fullScreen);
         }
-        SaveResolution(resolutionIndex, Screen.fullScreen);
     }
 
     private void SaveResolution(int resIndex, bool fullscreen)
     {
-        PlayerPrefs.SetInt("ResolutionPreference", resIndex);
+        if (IsValidResolutionIndex(resIndex))
+        {
+            PlayerPrefs.SetInt("ResolutionPreference", resIndex);
+        }
+        else if (PlayerPrefs.HasKey("ResolutionPreference"))
+        {
+            PlayerPrefs.DeleteKey("ResolutionPreference");
+        }
         PlayerPrefs.SetInt("FullscreenPreference", fullscreen ? 1 : 0);
         PlayerPrefs.Save();
     }
@@ -95,36 +99,58 @@ public class Setings : MonoBehaviour
             bool fullscreen = PlayerPrefs.GetInt("FullscreenPreference") == 1;
             fullscreenToggle.isOn = fullscreen;
         }
+        bool appliedSavedResolution = false;
+
         if (PlayerPrefs.HasKey("ResolutionPreference"))
         {
             int resIndex = PlayerPrefs.GetInt("ResolutionPreference");
-            resolutionDropdown.value = resIndex;
+            if (IsValidResolutionIndex(resIndex))
+            {
+                resolutionDropdown.value = resIndex;
+                appliedSavedResolution = true;
+            }
         }
-        else
+
+        if (!appliedSavedResolution)
         {
-            int currentResIndex = -1;
-            for (int i = 0; i < filteredResolutions.Count; i++)
-            {
-                if (filteredResolutions[i].width == Screen.currentResolution.width &&
-                    filteredResolutions[i].height == Screen.currentResolution.height)
-                {
-                    currentResIndex = i;
-                    break;
-                }
-            }
-            if (currentResIndex >= 0)
-            {
-                resolutionDropdown.value = currentResIndex;
-            }
+            SetDropdownToCurrentResolution();
         }
+        resolutionDropdown.RefreshShownValue();
     }
 
-    private void SetResolutionFromIndex(int index)
+    private bool TrySetResolutionFromIndex(int index)
     {
-        if (index >= 0 && index < filteredResolutions.Count)
+        if (IsValidResolutionIndex(index))
         {
             Resolution res = filteredResolutions[index];
             Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool IsValidResolutionIndex(int index)
+    {
+        return index >= 0 && index < filteredResolutions.Count;
+    }
+
+    private void SetDropdownToCurrentResolution()
+    {
+        int currentResIndex = -1;
+        for (int i = 0; i < filteredResolutions.Count; i++)
+        {
+            if (filteredResolutions[i].width == Screen.currentResolution.width &&
+                filteredResolutions[i].height == Screen.currentResolution.height)
+            {
+                currentResIndex = i;
+                break;
+            }
+        }
+
+        if (currentResIndex >= 0)
+        {
+            resolutionDropdown.value = currentResIndex;
         }
     }
 }
