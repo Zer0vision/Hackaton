@@ -7,8 +7,8 @@
       "RelativeMoniker": "D:0:0:{FDA0B737-596F-F2F1-DA9E-20D4B3919C70}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\playercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FDA0B737-596F-F2F1-DA9E-20D4B3919C70}|Assembly-CSharp.csproj|C:\\Users\\forwork\\Downloads\\Hackaton\\assets\\scripts\\pausemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FDA0B737-596F-F2F1-DA9E-20D4B3919C70}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\pausemenu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{FDA0B737-596F-F2F1-DA9E-20D4B3919C70}|Assembly-CSharp.csproj|c:\\users\\forwork\\downloads\\hackaton\\assets\\scripts\\ui\\pausemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FDA0B737-596F-F2F1-DA9E-20D4B3919C70}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\ui\\pausemanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -28,22 +28,23 @@
               "RelativeDocumentMoniker": "Assets\\Scripts\\PlayerController.cs",
               "ToolTip": "C:\\Users\\forwork\\Downloads\\Hackaton\\Assets\\Scripts\\PlayerController.cs",
               "RelativeToolTip": "Assets\\Scripts\\PlayerController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAAB0AAABJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-31T19:21:27.554Z",
+              "WhenOpened": "2025-11-01T11:36:09.001Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "PauseMenu.cs",
-              "DocumentMoniker": "C:\\Users\\forwork\\Downloads\\Hackaton\\Assets\\Scripts\\PauseMenu.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\PauseMenu.cs",
-              "ToolTip": "C:\\Users\\forwork\\Downloads\\Hackaton\\Assets\\Scripts\\PauseMenu.cs",
-              "RelativeToolTip": "Assets\\Scripts\\PauseMenu.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAtAAAAAAAAAA==",
+              "Title": "PauseManager.cs",
+              "DocumentMoniker": "C:\\Users\\forwork\\Downloads\\Hackaton\\Assets\\Scripts\\UI\\PauseManager.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\UI\\PauseManager.cs",
+              "ToolTip": "C:\\Users\\forwork\\Downloads\\Hackaton\\Assets\\Scripts\\UI\\PauseManager.cs",
+              "RelativeToolTip": "Assets\\Scripts\\UI\\PauseManager.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAIwEQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-10-31T19:18:32.458Z"
+              "WhenOpened": "2025-11-01T11:33:12.175Z",
+              "EditorCaption": ""
             }
           ]
         }
