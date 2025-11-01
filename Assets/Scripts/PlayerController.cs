@@ -34,6 +34,11 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (moveInput.sqrMagnitude <= 0.0001f)
+        {
+            moveInput = ReadFallbackMoveInput();
+        }
+
         Vector2 aimDirection = lookInput;
 
         if (aimDirection.sqrMagnitude <= 0.0001f && Mouse.current != null && gameplayCamera != null)
@@ -46,6 +51,49 @@ public class PlayerController : MonoBehaviour
         {
             transform.up = aimDirection.normalized;
         }
+    }
+
+    private static Vector2 ReadFallbackMoveInput()
+    {
+        Vector2 move = Vector2.zero;
+
+        if (Keyboard.current != null)
+        {
+            float horizontal = 0f;
+            if (Keyboard.current.aKey.isPressed)
+            {
+                horizontal -= 1f;
+            }
+
+            if (Keyboard.current.dKey.isPressed)
+            {
+                horizontal += 1f;
+            }
+
+            float vertical = 0f;
+            if (Keyboard.current.sKey.isPressed)
+            {
+                vertical -= 1f;
+            }
+
+            if (Keyboard.current.wKey.isPressed)
+            {
+                vertical += 1f;
+            }
+
+            move = new Vector2(horizontal, vertical);
+        }
+        else
+        {
+            move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        }
+
+        if (move.sqrMagnitude > 1f)
+        {
+            move.Normalize();
+        }
+
+        return move;
     }
 
     public void OnMove(InputAction.CallbackContext context)
