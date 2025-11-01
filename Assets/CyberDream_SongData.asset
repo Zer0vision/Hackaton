@@ -1546,5 +1546,5 @@ MonoBehaviour:
   - 283.5853
   - 283.86395
   - 284.14258
-  perfectWindowBeats: 0.06
-  goodWindowBeats: 0.12
+  perfectWindowBeats: 0.05
+  goodWindowBeats: 0.08

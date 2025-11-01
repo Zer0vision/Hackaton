@@ -71,6 +71,7 @@
     <Compile Include="Assets\Scripts\UIController.cs" />
     <Compile Include="Assets\Scripts\Rhythm\BeatMapData.cs" />
     <Compile Include="Assets\Scripts\UI\PauseManager.cs" />
+    <Compile Include="Assets\Scripts\Rhythm\SpectrumBeatVisualizer.cs" />
     <Compile Include="Assets\Scripts\Rhythm\ShootOnBeat.cs" />
     <Compile Include="Assets\Scripts\CameraFollow.cs" />
     <Compile Include="Assets\Scripts\Rhythm\ConductorAutoPlay.cs" />
