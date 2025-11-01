@@ -8,6 +8,9 @@ public class UIController : MonoBehaviour
     public Slider _musicSlider, _sfxSlider;
 
     private AudioManager _audioManager;
+    private bool _applyVolumesWhenReady;
+    private float _pendingMusicVolume = 1f;
+    private float _pendingSfxVolume = 1f;
 
     private void Awake()
     {
@@ -19,28 +22,51 @@ public class UIController : MonoBehaviour
         LoadSettings();
     }
 
+    private void Update()
+    {
+        if (_applyVolumesWhenReady && TryCacheAudioManager())
+        {
+            ApplyCachedVolumes();
+            _applyVolumesWhenReady = false;
+        }
+    }
+
     public void musicVolume()
     {
-        if (!TryCacheAudioManager())
-        {
-            return;
-        }
+        float value = _musicSlider != null ? _musicSlider.value : _pendingMusicVolume;
 
-        _audioManager.MusicVolume(_musicSlider.value);
-        PlayerPrefs.SetFloat("MusicVolume", _musicSlider.value);
+        PlayerPrefs.SetFloat("MusicVolume", value);
         PlayerPrefs.Save();
+
+        _pendingMusicVolume = value;
+
+        if (TryCacheAudioManager())
+        {
+            _audioManager.MusicVolume(value);
+        }
+        else
+        {
+            _applyVolumesWhenReady = true;
+        }
     }
 
     public void SFXVolume()
     {
-        if (!TryCacheAudioManager())
-        {
-            return;
-        }
+        float value = _sfxSlider != null ? _sfxSlider.value : _pendingSfxVolume;
 
-        _audioManager.SFXVolume(_sfxSlider.value);
-        PlayerPrefs.SetFloat("SFXVolume", _sfxSlider.value);
+        PlayerPrefs.SetFloat("SFXVolume", value);
         PlayerPrefs.Save();
+
+        _pendingSfxVolume = value;
+
+        if (TryCacheAudioManager())
+        {
+            _audioManager.SFXVolume(value);
+        }
+        else
+        {
+            _applyVolumesWhenReady = true;
+        }
     }
 
     public void LoadSettings()
@@ -58,11 +84,28 @@ public class UIController : MonoBehaviour
             _sfxSlider.SetValueWithoutNotify(sfxVolume);
         }
 
+        _pendingMusicVolume = musicVolume;
+        _pendingSfxVolume = sfxVolume;
+
         if (TryCacheAudioManager())
         {
-            _audioManager.MusicVolume(musicVolume);
-            _audioManager.SFXVolume(sfxVolume);
+            ApplyCachedVolumes();
         }
+        else
+        {
+            _applyVolumesWhenReady = true;
+        }
+    }
+
+    private void ApplyCachedVolumes()
+    {
+        if (_audioManager == null)
+        {
+            return;
+        }
+
+        _audioManager.MusicVolume(_pendingMusicVolume);
+        _audioManager.SFXVolume(_pendingSfxVolume);
     }
 
     private bool TryCacheAudioManager()
@@ -79,12 +122,6 @@ public class UIController : MonoBehaviour
         }
 
         _audioManager = FindObjectOfType<AudioManager>();
-        if (_audioManager == null)
-        {
-            Debug.LogWarning("AudioManager instance not found when accessing UIController.");
-            return false;
-        }
-
-        return true;
+        return _audioManager != null;
     }
 }
