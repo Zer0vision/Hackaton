@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (PauseManager.IsPaused) return; // ← стопим движения при паузе
         Vector2 move = ReadMove();
         if (move.sqrMagnitude > 1f) move.Normalize();
         rb.MovePosition(rb.position + move * moveSpeed * Time.fixedDeltaTime);
@@ -26,6 +27,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (PauseManager.IsPaused) return; // ← стопим движения при паузе
         if (cam == null || Mouse.current == null) return;
         Vector3 mouseWorld = cam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
         Vector2 dir = (mouseWorld - transform.position);
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
         var kb = Keyboard.current;
         var gp = Gamepad.current;
 
-        // ���������� WASD
+        // Клавиатура WASD
         float x = 0f, y = 0f;
         if (kb != null)
         {
@@ -47,7 +49,7 @@ public class PlayerController : MonoBehaviour
             if (kb.wKey.isPressed) y += 1f;
         }
 
-        // ������� (���� ���������)
+        // Геймпад (если подключён)
         if (gp != null)
         {
             Vector2 stick = gp.leftStick.ReadValue();

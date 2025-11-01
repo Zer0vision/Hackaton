@@ -13,3 +13,6 @@ MemoryCaptures/
 *.booproj
 *.svd
 *.pdb
+
+# Visual Studio cache directory
+.vs/
