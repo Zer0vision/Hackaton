@@ -1,5 +1,10 @@
 using UnityEngine;
 
+
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;   // новый инпут
+#endif
+
 public class Weapon2D : MonoBehaviour
 {
     [Header("Refs")] public Bullet bulletPrefab; 
@@ -24,7 +29,19 @@ public class Weapon2D : MonoBehaviour
 
     public void ShootTowardsMouse()
     {
-        var mouseWorld = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        ShootAt(mouseWorld);
+        Vector2 screenPos;
+
+#if ENABLE_INPUT_SYSTEM
+        // Новый инпут: берём позицию активного указателя (мышь/тач/стилус)
+        if (Pointer.current == null) return; // на всякий случай
+        screenPos = Pointer.current.position.ReadValue();
+#else
+    // Старый инпут
+    screenPos = Input.mousePosition;
+#endif
+
+        var world = (Vector2)Camera.main.ScreenToWorldPoint(screenPos);
+        ShootAt(world);
     }
+
 }
