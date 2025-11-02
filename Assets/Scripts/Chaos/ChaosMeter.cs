@@ -16,10 +16,22 @@ public class ChaosMeter : MonoBehaviour
 
     [Header("UI")] public Image barFill;
 
+    static Sprite _fallbackSprite;
+
     void Awake()
     {
-        // Гарантируем вертикальное заполнение снизу вверх
         if (barFill) {
+            // Если спрайта нет — подставим 1x1 белый, иначе FillAmount не будет виден
+            if (barFill.sprite == null) {
+                if (_fallbackSprite == null) {
+                    var tex = Texture2D.whiteTexture;
+                    _fallbackSprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100f);
+                }
+                barFill.sprite = _fallbackSprite;
+                barFill.preserveAspect = false;
+            }
+
+            // Вертикальное заполнение снизу вверх
             barFill.type = Image.Type.Filled;
             barFill.fillMethod = Image.FillMethod.Vertical;
             barFill.fillOrigin = (int)Image.OriginVertical.Bottom;
@@ -59,8 +71,7 @@ public class ChaosMeter : MonoBehaviour
 
     Color EvaluateColor(float t)
     {
-        // 0 .. graphiteStart  — плавно зелёный -> красный
-        // graphiteStart .. 1 — плавно красный -> графитовый
+        // 0 .. graphiteStart  — зелёный -> красный, далее — красный -> графитовый
         if (t <= graphiteStart)
         {
             float u = Mathf.InverseLerp(0f, graphiteStart, t);
